@@ -1,0 +1,14 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: jhipstersimple
+  namespace: jd-helm-ingress
+spec:
+  rules:
+    - host: jhipstersimple.jd-helm-ingress.192.168.99.100.nip.io
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: jhipstersimple
+              servicePort: 8080

@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: jhipstersimple-postgresql
+  namespace: jd-n2
+  labels:
+    app: jhipstersimple-postgresql
+type: Opaque
+data:
+  postgresql-password: MzUzN2E3MjY5MmU1YjJjZjA1OGE3ZDJkZDk0ODFhZDkyOWVjMmQxMTAxMGY5ZjJmYWZlOGFlYWM3ZjM0
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jhipstersimple-postgresql
+  namespace: jd-n2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jhipstersimple-postgresql
+  template:
+    metadata:
+      labels:
+        app: jhipstersimple-postgresql
+    spec:
+      volumes:
+        - name: data
+          emptyDir: {}
+      containers:
+        - name: postgres
+          image: postgres:12.3
+          env:
+            - name: POSTGRES_USER
+              value: jhipstersimple
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: jhipstersimple-postgresql
+                  key: postgresql-password
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jhipstersimple-postgresql
+  namespace: jd-n2
+spec:
+  selector:
+    app: jhipstersimple-postgresql
+  ports:
+    - port: 5432

@@ -1,0 +1,14 @@
+2020-11-23 14:50:36.027  INFO 1 --- [           main] com.mycompany.myapp.JhipstersimpleApp    : Starting JhipstersimpleApp on jhipstersimple-7c65dd75fb-jx9s6 with PID 1 (/app/classes started by root in /)
+2020-11-23 14:50:36.031  INFO 1 --- [           main] com.mycompany.myapp.JhipstersimpleApp    : The following profiles are active: prod
+2020-11-23 14:50:40.684  INFO 1 --- [           main] c.mycompany.myapp.config.WebConfigurer   : Web application configuration, using profiles: prod
+2020-11-23 14:50:40.686  INFO 1 --- [           main] c.mycompany.myapp.config.WebConfigurer   : Web application fully configured
+2020-11-23 14:50:40.696  INFO 1 --- [           main] c.m.myapp.config.LoggingConfiguration    : map: {app_name=jhipstersimple, app_port=8080, app_datasource_url=jdbc:postgresql://jhipstersimple-postgresql.jd-n2.svc.cluster.local:5432/jhipstersimple, app_datasource_username=jhipstersimple, app_datasource_password=3537a72692e5b2cf058a7d2dd9481ad929ec2d11010f9f2fafe8aeac7f34}
+2020-11-23 14:50:42.959  INFO 1 --- [           main] org.jboss.threads                        : JBoss Threads version 3.1.0.Final
+2020-11-23 14:50:43.026  INFO 1 --- [           main] com.mycompany.myapp.JhipstersimpleApp    : Started JhipstersimpleApp in 14.65 seconds (JVM running for 15.976)
+2020-11-23 14:50:43.033  INFO 1 --- [           main] com.mycompany.myapp.JhipstersimpleApp    : 
+----------------------------------------------------------
+	Application 'jhipstersimple' is running! Access URLs:
+	Local: 		http://localhost:8080/
+	External: 	http://172.17.0.9:8080/
+	Profile(s): 	[prod]
+----------------------------------------------------------

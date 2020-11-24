@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: jhipstersimple-postgresql
+  namespace: jd-ingress
+  labels:
+    app: jhipstersimple-postgresql
+type: Opaque
+data:
+  postgresql-password: MmVhMTIxNmI5ZDE4MmZjOGE1ZDFkMjlmODU4ZTVhOWUwMGI2NmJiNWI5NDJiYzhhMzgyNDZkMGEyOWIx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jhipstersimple-postgresql
+  namespace: jd-ingress
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jhipstersimple-postgresql
+  template:
+    metadata:
+      labels:
+        app: jhipstersimple-postgresql
+    spec:
+      volumes:
+        - name: data
+          emptyDir: {}
+      containers:
+        - name: postgres
+          image: postgres:12.3
+          env:
+            - name: POSTGRES_USER
+              value: jhipstersimple
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: jhipstersimple-postgresql
+                  key: postgresql-password
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jhipstersimple-postgresql
+  namespace: jd-ingress
+spec:
+  selector:
+    app: jhipstersimple-postgresql
+  ports:
+    - port: 5432

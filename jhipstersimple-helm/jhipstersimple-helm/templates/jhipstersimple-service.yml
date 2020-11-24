@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jhipstersimple
+  namespace: jd-helm
+  labels:
+    app: jhipstersimple
+spec:
+  selector:
+    app: jhipstersimple
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080

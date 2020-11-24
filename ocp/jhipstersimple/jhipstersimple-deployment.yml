@@ -1,0 +1,114 @@
+#
+# Application template.
+#
+# This defines all the configurable parameters and other objects that are needed to run the jHipster application
+# service. This template can even be saved in OpenShift namespace as well so that have the flexibility to do any project specific
+# customizations. Pls note wherever displayName says *** PLEASE DO NOT CHANGE THIS ***, don't touch that as those parameters will be
+# referenced in other places.
+#
+apiVersion: v1
+kind: Template
+metadata:
+  name: jhipstersimple-app-template
+  namespace: jd-p1
+  annotations:
+    description: This template defines objects that are required to spin up an jhipstersimple service pod
+    tags: jhipstersimple, service
+    openshift.io/display-name: jhipstersimple-template
+    openshift.io/long-description: 'This template provides objects that are required to spin up a jhipstersimple service pod.'
+    openshift.io/provider-display-name: JHipster
+labels:
+  app: jhipstersimple-app
+  createdBy: JHipster-Team
+parameters:
+  - name: APPLICATION_NAME
+    value: jhipstersimple
+    description: Name of the application
+    required: true
+    displayName: Application Name
+  - name: SECRET_REF
+    value: jhipstersimple-ds-secret-ref
+    description: Name of the DataSource Secret Reference
+    required: true
+    displayName: '*** PLEASE DO NOT CHANGE THIS ***'
+  - name: REG_SECRET_REF
+    value: reg-secret-ref
+    description: Name of the Registry Secret Reference
+    required: true
+    displayName: '*** PLEASE DO NOT CHANGE THIS ***'
+  - name: APP_PORT
+    value: '8080'
+    description: Port of the application
+    required: true
+    displayName: Application Port
+objects:
+  - apiVersion: v1
+    kind: DeploymentConfig
+    metadata:
+      name: ${APPLICATION_NAME}
+    spec:
+      strategy:
+        type: Rolling
+        rollingParams:
+          updatePeriodSeconds: 1
+          intervalSeconds: 1
+          timeoutSeconds: 600
+          maxUnavailable: 25%
+          maxSurge: 25%
+        resources:
+      replicas: 1
+      template:
+        metadata:
+          labels:
+            app: ${APPLICATION_NAME}
+        spec:
+          containers:
+            - name: ${APPLICATION_NAME}
+              image: jhuang64/jhipstersimple
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: SPRING_PROFILES_ACTIVE
+                  value: prod,swagger
+                - name: SPRING_DATASOURCE_URL
+                  value: jdbc:postgresql://${APPLICATION_NAME}-postgresqldb:5432/${APPLICATION_NAME}
+                - name: SPRING_DATASOURCE_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${SECRET_REF}
+                      key: database-user
+                - name: SPRING_DATASOURCE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${SECRET_REF}
+                      key: database-password
+              ports:
+                - name: http
+                  containerPort: ${{APP_PORT}}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        service.alpha.openshift.io/dependencies: '[{
+          "name":"${APPLICATION_NAME}-postgresqldb", "namespace": "", "kind": "Service"}]'
+      labels:
+        app: ${APPLICATION_NAME}
+      name: ${APPLICATION_NAME}
+    spec:
+      selector:
+        app: ${APPLICATION_NAME}
+      type: LoadBalancer
+      ports:
+        - name: http
+          port: ${{APP_PORT}}
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      name: ${APPLICATION_NAME}
+    spec:
+      to:
+        kind: Service
+        name: ${APPLICATION_NAME}
+        weight: 100
+      port:
+        targetPort: 'http'
+      wildcardPolicy: None
